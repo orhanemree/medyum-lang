@@ -31,6 +31,9 @@ def lex_program(program):
         elif op == "==":
             program[ip] = (EQUAL, )
 
+        elif op == ">":
+            program[ip] = (GREATER, )
+
         elif op == "takasla":
             program[ip] = (SWAP, )
 
@@ -49,22 +52,35 @@ def lex_program(program):
             if if_addr[0] == IF:
                 program[if_addr[1]] = (IF, ip)
             else:
-                assert False, "unreachable"
+                assert False, "`değilse` yalnızca `ise` ifadesinden sonra kullanılabilir."
             block_stack.append((ELSE, ip))
             program[ip] = (ELSE, )
 
-        elif op == "son":
-            if_or_else_addr = block_stack.pop()
-            if if_or_else_addr[0] == IF:
-                program[if_or_else_addr[1]] = (IF, ip)
-            elif if_or_else_addr[0] == ELSE:
-                program[if_or_else_addr[1]] = (ELSE, ip)
+        elif op == "iken":
+            block_stack.append((WHILE, ip))
+            program[ip] = (WHILE, )
+
+        elif op == "yap":
+            block_stack.append((DO, ip))
+            program[ip] = (DO, )
+
+        elif op == "bitir":
+            last_block = block_stack.pop()
+            if last_block[0] == IF:
+                program[last_block[1]] = (IF, ip)
+                program[ip] = (END, ip + 1)
+            elif last_block[0] == ELSE:
+                program[last_block[1]] = (ELSE, ip)
+                program[ip] = (END, ip + 1)
+            elif last_block[0] == DO:
+                program[last_block[1]] = (DO, ip)
+                while_addr = block_stack.pop()
+                program[ip] = (END, while_addr[1])
             else:
-                assert False, "unreachable"
-            program[ip] = (END, )
+                assert False, "`bitir` yalnızca `ise, değilse, yap` ifadelerinden sonra kullanılabilir."
 
         else:
-            program[ip] = (PUSH, op)
+            program[ip] = (PUSH, int(op))
 
     return program
 
@@ -85,37 +101,43 @@ def run_program_from_file(file_path):
             elif op[0] == PLUS:
                 a = stack.pop()
                 b = stack.pop()
-                stack.append(a + b)
+                stack.append(b + a)
                 ip += 1
 
             elif op[0] == MINUS:
                 a = stack.pop()
                 b = stack.pop()
-                stack.append(a - b)
+                stack.append(b - a)
                 ip += 1
 
             elif op[0] == TIMES:
                 a = stack.pop()
                 b = stack.pop()
-                stack.append(a * b)
+                stack.append(b * a)
                 ip += 1
 
             elif op[0] == DIVIDE:
                 a = stack.pop()
                 b = stack.pop()
-                stack.append(a // b)
+                stack.append(b // a)
                 ip += 1
 
             elif op[0] == MOD:
                 a = stack.pop()
                 b = stack.pop()
-                stack.append(a % b)
+                stack.append(b % a)
                 ip += 1
 
             elif op[0] == EQUAL:
                 a = stack.pop()
                 b = stack.pop()
-                stack.append(int(a == b))
+                stack.append(int(b == a))
+                ip += 1
+
+            elif op[0] == GREATER:
+                a = stack.pop()
+                b = stack.pop()
+                stack.append(int(b > a))
                 ip += 1
 
             elif op[0] == SWAP:
@@ -145,15 +167,24 @@ def run_program_from_file(file_path):
             elif op[0] == ELSE:
                 ip = op[1]
 
-            elif op[0] == END:
+            elif op[0] == WHILE:
                 ip += 1
+
+            elif op[0] == DO:
+                a = stack.pop()
+                if a:
+                    ip += 1
+                else:
+                    ip = op[1] + 1
+
+            elif op[0] == END:
+                ip = op[1]
 
             elif op[0] == PUSH:
                 stack.append(int(op[1]))
                 ip += 1
 
             else:
-                print(json.dumps(op))
                 assert False, "unreachable"
 
 
