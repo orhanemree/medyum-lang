@@ -9,7 +9,8 @@ def op():
 PUSH = op()
 
 # print
-PRINT = op() # yaz
+PRINT = op() # yanyaz
+PRINTLN = op() # yaz
 
 # math
 PLUS = op() # +
@@ -37,6 +38,9 @@ GET = op() # ?
 SWAP = op() # takasla
 COPY = op() # kopyala
 DROP = op() # düşür
+
+# exit
+EXIT = op() # çık
 
 # conditions
 IF = op() # ise

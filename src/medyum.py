@@ -18,8 +18,11 @@ def lex_program(program):
         op = program[ip]
 
         # print
-        if op == "yaz":
+        if op == "yanyaz":
             program[ip] = (PRINT, )
+            
+        elif op == "yaz":
+            program[ip] = (PRINTLN, )
 
         # math
         elif op == "+":
@@ -78,6 +81,10 @@ def lex_program(program):
 
         elif op == "düşür":
             program[ip] = (DROP, )
+
+        # exit
+        elif op == "çık":
+            program[ip] = (EXIT, )
 
         # conditions
         elif op == "ise":
@@ -145,6 +152,11 @@ def run_program_from_file(file_path):
 
             # print
             elif op[0] == PRINT:
+                a = stack.pop()
+                print(int(a), end="")
+                ip += 1
+
+            elif op[0] == PRINTLN:
                 a = stack.pop()
                 print(int(a))
                 ip += 1
@@ -263,6 +275,12 @@ def run_program_from_file(file_path):
                 a = stack.pop()
                 ip += 1
 
+            # exit
+            elif op[0] == EXIT:
+                a = stack.pop()
+                exit(not bool(a)) # should we remove "not" little bit confused here
+                ip += 1 # necessary ?
+
             # consitions
             elif op[0] == IF:
                 a = stack.pop()
@@ -291,6 +309,8 @@ def run_program_from_file(file_path):
 
             else:
                 assert False, "unreachable"
+
+        # print()
 
 
 if __name__ == "__main__":
