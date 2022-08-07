@@ -3,6 +3,13 @@
 from ops import *
 import sys
 
+memory = {}
+
+def is_int(string):
+    if string[0] in ('-', '+'):
+        return ststringr[1:].isdigit()
+    return string.isdigit()
+
 def lex_program(program):
     program = program.split()
     block_stack = []
@@ -10,9 +17,11 @@ def lex_program(program):
     for ip in range(len(program)):
         op = program[ip]
 
+        # print
         if op == "yaz":
             program[ip] = (PRINT, )
 
+        # math
         elif op == "+":
             program[ip] = (PLUS, )
 
@@ -27,13 +36,40 @@ def lex_program(program):
 
         elif op == "%":
             program[ip] = (MOD, )
-
+            
+        # logic
         elif op == "==":
             program[ip] = (EQUAL, )
+
+        elif op == "!=":
+            program[ip] = (NOT_EQUAL, )
 
         elif op == ">":
             program[ip] = (GREATER, )
 
+        elif op == "<":
+            program[ip] = (LESS, )
+
+        elif op == ">=":
+            program[ip] = (GREATER_OR_EQUAL, )
+
+        elif op == "<=":
+            program[ip] = (LESS_OR_EQUAL, )
+
+        elif op == "&&":
+            program[ip] = (AND, )
+
+        elif op == "||":
+            program[ip] = (OR, )
+            
+        # variables
+        elif op == "=":
+            program[ip] = (SET, )
+
+        elif op == "?":
+            program[ip] = (GET, )
+
+        # methods
         elif op == "takasla":
             program[ip] = (SWAP, )
 
@@ -43,6 +79,7 @@ def lex_program(program):
         elif op == "düşür":
             program[ip] = (DROP, )
 
+        # conditions
         elif op == "ise":
             block_stack.append((IF, ip))
             program[ip] = (IF, )
@@ -56,6 +93,7 @@ def lex_program(program):
             block_stack.append((ELSE, ip))
             program[ip] = (ELSE, )
 
+        # loops
         elif op == "iken":
             block_stack.append((WHILE, ip))
             program[ip] = (WHILE, )
@@ -64,6 +102,7 @@ def lex_program(program):
             block_stack.append((DO, ip))
             program[ip] = (DO, )
 
+        # end
         elif op == "bitir":
             last_block = block_stack.pop()
             if last_block[0] == IF:
@@ -79,8 +118,13 @@ def lex_program(program):
             else:
                 assert False, "`bitir` yalnızca `ise, değilse, yap` ifadelerinden sonra kullanılabilir."
 
+        # push
+        elif is_int(op):
+            program[ip] = (PUSH, op)
+
+        # (push variable)
         else:
-            program[ip] = (PUSH, int(op))
+            program[ip] = (VAR, op)
 
     return program
 
@@ -88,16 +132,24 @@ def run_program_from_file(file_path):
     with open(file_path) as f:
         program =  lex_program(f.read())
         stack = []
-        ip = 0
+        global memory
 
+        ip = 0
         while ip < len(program):
             op = program[ip]
 
-            if op[0] == PRINT:
-                a = stack.pop()
-                print(a)
+            # push
+            if op[0] == PUSH:
+                stack.append(int(op[1]))
                 ip += 1
 
+            # print
+            elif op[0] == PRINT:
+                a = stack.pop()
+                print(int(a))
+                ip += 1
+
+            # math
             elif op[0] == PLUS:
                 a = stack.pop()
                 b = stack.pop()
@@ -128,10 +180,17 @@ def run_program_from_file(file_path):
                 stack.append(b % a)
                 ip += 1
 
+            # logic
             elif op[0] == EQUAL:
                 a = stack.pop()
                 b = stack.pop()
                 stack.append(int(b == a))
+                ip += 1
+
+            elif op[0] == NOT_EQUAL:
+                a = stack.pop()
+                b = stack.pop()
+                stack.append(int(b != a))
                 ip += 1
 
             elif op[0] == GREATER:
@@ -140,6 +199,53 @@ def run_program_from_file(file_path):
                 stack.append(int(b > a))
                 ip += 1
 
+            elif op[0] == LESS:
+                a = stack.pop()
+                b = stack.pop()
+                stack.append(int(b < a))
+                ip += 1
+
+            elif op[0] == GREATER_OR_EQUAL:
+                a = stack.pop()
+                b = stack.pop()
+                stack.append(int(b >= a))
+                ip += 1
+
+            elif op[0] == LESS_OR_EQUAL:
+                a = stack.pop()
+                b = stack.pop()
+                stack.append(int(b <= a))
+                ip += 1
+
+            elif op[0] == AND:
+                a = stack.pop()
+                b = stack.pop()
+                stack.append(int(bool(b) and bool(a)))
+                ip += 1
+                
+            elif op[0] == OR:
+                a = stack.pop()
+                b = stack.pop()
+                stack.append(int(bool(b) or bool(a)))
+                ip += 1
+
+            # variables
+            elif op[0] == VAR:
+                stack.append(op)
+                ip += 1
+
+            elif op[0] == SET:
+                a = stack.pop()
+                b = stack.pop()
+                memory[a[1]] = int(b)
+                ip += 1
+
+            elif op[0] == GET:
+                a = stack.pop()
+                stack.append(memory[a[1]])
+                ip += 1
+
+            # methods
             elif op[0] == SWAP:
                 a = stack.pop()
                 b = stack.pop()
@@ -157,6 +263,7 @@ def run_program_from_file(file_path):
                 a = stack.pop()
                 ip += 1
 
+            # consitions
             elif op[0] == IF:
                 a = stack.pop()
                 if a:
@@ -167,6 +274,7 @@ def run_program_from_file(file_path):
             elif op[0] == ELSE:
                 ip = op[1]
 
+            # loops
             elif op[0] == WHILE:
                 ip += 1
 
@@ -177,12 +285,9 @@ def run_program_from_file(file_path):
                 else:
                     ip = op[1] + 1
 
+            # end
             elif op[0] == END:
                 ip = op[1]
-
-            elif op[0] == PUSH:
-                stack.append(int(op[1]))
-                ip += 1
 
             else:
                 assert False, "unreachable"
