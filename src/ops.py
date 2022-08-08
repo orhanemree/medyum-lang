@@ -12,6 +12,9 @@ PUSH = op()
 PRINT = op() # yanyaz
 PRINTLN = op() # yaz
 
+# input
+INPUT = op() # oku
+
 # math
 PLUS = op() # +
 MINUS = op() # -

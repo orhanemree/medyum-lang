@@ -24,6 +24,10 @@ def lex_program(program):
         elif op == "yaz":
             program[ip] = (PRINTLN, )
 
+        # input
+        elif op == "oku":
+            program[ip] = (INPUT, )
+
         # math
         elif op == "+":
             program[ip] = (PLUS, )
@@ -173,6 +177,12 @@ def run_program_from_file(file_path):
                 a = stack.pop()
                 print(int(a), end="")
                 ip += 1
+
+            # input
+            elif op[0] == INPUT:
+                a = input("> ")
+                stack.append(int(a))
+                ip += 1 
 
             elif op[0] == PRINTLN:
                 a = stack.pop()
