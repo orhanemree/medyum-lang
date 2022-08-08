@@ -45,6 +45,8 @@ EXIT = op() # çık
 # conditions
 IF = op() # ise
 ELSE = op() # değilse
+SWITCH = op() # eşleştir
+CASE = op() # ile
 
 # loops
 WHILE = op() # iken
