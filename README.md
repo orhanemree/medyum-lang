@@ -10,7 +10,8 @@ Ayrıca yapılacak bir `yığın` başka iş yokmuş gibi vscode'a syntax highli
 ## Hızlı Başlangıç
 ```terminal
 $ pip install medyum
-$ medyum <DOSYA_ADI>.med
+$ python -m medyum <DOSYA_ADI>.med
+# binary çalıştırmayı çözemedim henüz şimdilik böyle
 ```
 
 ## Geliştirici Ortamı

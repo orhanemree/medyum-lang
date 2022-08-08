@@ -1,4 +1,4 @@
-from ops import *
+from .ops import *
 import sys
 
 def is_int(string):

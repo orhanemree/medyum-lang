@@ -9,13 +9,12 @@ def readme():
 
 setup(
   name="medyum",
-  version="0.0.1",
+  version="1.0.0",
   description="🧞‍♂️ Stack-oriented programming language in Turkish. Just for fun.",
   long_description=readme(),
   long_description_content_type="text/markdown",
   author="orhanemree (Orhan Emre Dikicigil)",
   author_email="orhanemre.dev@gmail.com",
   license="MIT",
-  packages=["medyum"],
-  scripts=["bin/medyum"]
+  packages=["medyum"]
 )
