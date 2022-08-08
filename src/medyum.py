@@ -135,17 +135,13 @@ def lex_program(program):
                 while_addr = block_stack.pop()
                 program[ip] = (END, while_addr[1])
             elif last_block[0] == SWITCH:
-                program[last_block[1]] = (COPY, )
-                program[ip] = (END, ip + 1)
+                program[last_block[1]] = (SWITCH, )
+                program[ip] = (DROP, )
             elif last_block[0] == CASE:
                 program[last_block[1]] = (CASE, ip)
-                block_stack.append((END, ip))
                 program[ip] = (END, ip + 1)
-            elif last_block[0] == END:
-                program[last_block[1]] = (END, ip)
-                program[ip] = (DROP, )
             else:
-                assert False, "`bitir` yalnızca `ise, değilse, yap` ifadelerinden sonra kullanılabilir."
+                assert False, "`bitir` yalnızca `ise, değilse, eşleştir, ile, yap` ifadelerinden sonra kullanılabilir."
 
         # push
         elif is_int(op):
@@ -309,7 +305,7 @@ def run_program_from_file(file_path):
                 exit(not bool(a)) # should we remove "not" little bit confused here
                 ip += 1 # necessary ?
 
-            # consitions
+            # conditions
             elif op[0] == IF:
                 a = stack.pop()
                 if a:
@@ -321,18 +317,15 @@ def run_program_from_file(file_path):
                 ip = op[1]
 
             elif op[0] == SWITCH:
-                a = stack.pop()
-                stack.append(a)
-                stack.append(a)
                 ip += 1
 
             elif op[0] == CASE:
                 a = stack.pop()
                 b = stack.pop()
+                stack.append(b)
                 if a == b:
                     ip += 1
                 else:
-                    stack.append(b)
                     ip = op[1] + 1
 
             # loops
@@ -352,7 +345,7 @@ def run_program_from_file(file_path):
 
             else:
                 assert False, "unreachable"
-
+            
         # print()
 
 
