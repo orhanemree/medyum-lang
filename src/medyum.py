@@ -3,15 +3,16 @@
 from ops import *
 import sys
 
-memory = {}
-
 def is_int(string):
     if string[0] in ('-', '+'):
         return ststringr[1:].isdigit()
     return string.isdigit()
 
 def lex_program(program):
-    program = program.split()
+    program = list(map(lambda x: x.split("//")[0], program)) # ignore comments
+    program = list(map(lambda x: x.split(), program)) # slice to words
+    program = list(filter(lambda x: x != [], program)) # ignore empty rows
+    program = [item for sublist in program for item in sublist] # convert nested array to flat array
     block_stack = []
 
     for ip in range(len(program)):
@@ -155,9 +156,9 @@ def lex_program(program):
 
 def run_program_from_file(file_path):
     with open(file_path) as f:
-        program =  lex_program(f.read())
+        program =  lex_program(f.readlines())
         stack = []
-        global memory
+        memory = {}
 
         ip = 0
         while ip < len(program):
