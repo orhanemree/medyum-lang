@@ -168,7 +168,12 @@ def run_program(program):
         # print
         elif op[0] == PRINT:
             a = stack.pop()
-            print(int(a), end="")
+            print(int(a), end=" ")
+            ip += 1
+
+        elif op[0] == PRINTLN:
+            a = stack.pop()
+            print(int(a))
             ip += 1
 
         # input
@@ -176,11 +181,6 @@ def run_program(program):
             a = input("> ")
             stack.append(int(a))
             ip += 1 
-
-        elif op[0] == PRINTLN:
-            a = stack.pop()
-            print(int(a))
-            ip += 1
 
         # math
         elif op[0] == PLUS:
