@@ -7,6 +7,8 @@ Yığın odaklı programlama dilleri hakkında daha fazla bilgiyi [bu wikide](ht
 
 Ayrıca yapılacak bir `yığın` başka iş yokmuş gibi vscode'a syntax highlight desteği de eklenmiştir. [Marketplace](https://marketplace.visualstudio.com/items?itemName=orhanemredev.medyum-syntax)'de göz atın. 
 
+Python ve kütüphane kurmadan, tarayıcıdan denemek isteyenler için PyScript kullanılarak [Medyum Playground](https://medyum.netlify.app/) hazırlandı oraya bir göz atabilirler.
+
 ## Hızlı Başlangıç
 ```terminal
 $ pip install medyum
